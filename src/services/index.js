@@ -22,9 +22,9 @@ export function updateTodo(body, id) {
     .catch((error) => error.message);
 }
 
-// export function deleteTodo(id) {
-//   return axios
-//     .delete(environment.base_api_url + "todos!!")
-//     .then((response) => response.data)
-//     .catch((error) => error.message);
-// }
+export function deleteTodo(id) {
+  return axios
+    .delete(environment.base_api_url + "todos/"+ id)
+    .then((response) => response.data)
+    .catch((error) => error.message);
+}
