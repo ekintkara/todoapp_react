@@ -1,5 +1,4 @@
-import { Table, Tag, Space, Spin, Button, Modal, Input, Form } from "antd";
-
+import { Table, Tag, Space, Spin, Modal, Input, Form } from "antd";
 import React, { useEffect, useState } from "react";
 import { getTodos, addTodo, deleteTodo, updateTodo } from "../services";
 
@@ -11,12 +10,14 @@ const TodoForm = () => {
   const [loading, setLoading] = useState(false);
   const [addModalOpen, setaddModalOpen] = useState(false);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
+  // const [addButtonSwitch, setAddButtonSwitch] = useState(true);
 
   useEffect(() => {
     setLoading(true);
 
     getTodos().then((response) => {
       setTodoList(response);
+      setLoading(false);
     });
   }, []);
 
@@ -57,9 +58,14 @@ const TodoForm = () => {
     setData(data);
   };
   const handleOnDeleteTodo = (id) => {
+    Modal.warning({
+      title: "I'm deleting todo",
+    });
+
     deleteTodo(id).then((response) => {
       getTodos().then((response) => {
         setTodoList(response);
+
         setLoading(false);
       });
     });
@@ -70,6 +76,7 @@ const TodoForm = () => {
       title: "isCompleted",
       key: "isCompleted",
       dataIndex: "isCompleted",
+
       render: (_, { isCompleted }) => (
         <div>
           {isCompleted ? (
@@ -85,15 +92,21 @@ const TodoForm = () => {
       key: "action",
       render: (_, data) => (
         <Space size="middle">
-          <Button onClick={() => handleUpdateTodo(data)}>Update</Button>
+          <button className="a.button3" onClick={() => handleUpdateTodo(data)}>
+            Update
+          </button>
 
-          <Button onClick={() => handleOnDeleteTodo(data.id)}>Delete</Button>
+          <button
+            className="a.button3"
+            onClick={() => handleOnDeleteTodo(data.id)}
+          >
+            Delete
+          </button>
         </Space>
       ),
     },
   ];
   const todoInputChange = (e) => {
-    console.log(e);
     setAddInput(e.target.value);
   };
   const todoUpdateChange = (e) => {
@@ -104,22 +117,23 @@ const TodoForm = () => {
     <>
       {todoList && (
         <div className="container">
-          <Button className="add-button" onClick={addShowModal}>
+          <button className="add-button" onClick={addShowModal}>
             ADD
-          </Button>
+          </button>
+
           <div className="todotable-container">
             <Modal
-              title="addtodo"
+              title="Add Todo"
               open={addModalOpen}
               onOk={handleAddTodo}
               onCancel={handleAddCancel}
-              // okButtonProps={{
-              //   disabled: true,
-              // }}
+              okButtonProps={{
+                disabled: addInput ? false : true,
+              }}
             >
               <Form>
                 <Form.Item
-                  name="TODO"
+                  name="addInput"
                   rules={[
                     { required: true, message: "Please input your TODO!" },
                     {
@@ -137,7 +151,7 @@ const TodoForm = () => {
             </Modal>
             <div>
               <Modal
-                title=""
+                title="Update Todo"
                 open={updateModalOpen}
                 onOk={clickUpdateTodo}
                 onCancel={handleUpdateCancel}
@@ -145,7 +159,7 @@ const TodoForm = () => {
               >
                 <Form>
                   <Form.Item
-                    name="TODO"
+                    name="Update"
                     rules={[
                       { required: true, message: "" },
                       {
@@ -163,8 +177,9 @@ const TodoForm = () => {
                 </Form>
               </Modal>
             </div>
+            <div></div>
 
-            <Table columns={columns} dataSource={todoList} rowKey="id"></Table>
+            <Table columns={columns} dataSource={todoList} rowKey="id" />
           </div>
         </div>
       )}{" "}
